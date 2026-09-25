@@ -8,13 +8,21 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rasimphithushawn.smartpantrymanager.ui.PantryListFragment;
 import com.rasimphithushawn.smartpantrymanager.ui.SettingsFragment;
 import com.rasimphithushawn.smartpantrymanager.ui.SuggestedRecipesFragment;
-
+import com.rasimphithushawn.smartpantrymanager.database.AppDatabase;
+import com.rasimphithushawn.smartpantrymanager.database.SeedData;
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AppDatabase db = AppDatabase.getInstance(this);
+        AppDatabase.executor.execute(() -> {
+            if (db.recipeDao().getRecipeCount() == 0) {
+                db.recipeDao().insertAll(SeedData.getRecipes());
+            }
+        });
 
         BottomNavigationView nav = findViewById(R.id.bottom_nav);
         nav.setOnItemSelectedListener(item -> {
